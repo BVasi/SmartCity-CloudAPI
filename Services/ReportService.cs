@@ -49,6 +49,11 @@ public class ReportService
         return reports;
     }
 
+    public async Task DeleteReportAsync(Domain.models.Report reportToDelete)
+    {
+        await _reportsTable.ExecuteAsync(TableOperation.Delete(reportToDelete));
+    }
+
     private readonly CloudTable _reportsTable;
     private const string TABLE_NAME = "Reports";
     private const string AZURE_STORAGE = "AzureStorage";

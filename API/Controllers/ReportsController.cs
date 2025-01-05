@@ -86,6 +86,28 @@ public class ReportsController : ControllerBase //to do: add HttpPut method
         return Ok(new GetReportResponse(updatedReport));
     }
 
+    [HttpDelete(DELETE_REPORTED_PROBLEM_ROUTE)]
+    public async Task<IActionResult> DeleteReport(CityName cityName, string id)
+    {
+        var jwtToken = Request.Headers[AUTHORIZATION_HEADER].ToString()?.Replace(BEARER_PARAMETER, EMPTY_STRING);
+        var userEmail = JwtUtils.GetUserEmailFromToken(jwtToken!, _configuration);
+        if (userEmail == null)
+        {
+            return Unauthorized();
+        }
+        if (!await _userService.IsUserAdminByEmailAsync(userEmail))
+        {
+            return Unauthorized();
+        }
+        var reportToDelete = await _reportService.GetReportAsync(cityName, id);
+        if (reportToDelete == null)
+        {
+            return NotFound();
+        }
+        await _reportService.DeleteReportAsync(reportToDelete);
+        return NoContent();
+    }
+
     private readonly ReportService _reportService;
     private readonly UserService _userService;
     private readonly IConfiguration _configuration;
@@ -94,6 +116,7 @@ public class ReportsController : ControllerBase //to do: add HttpPut method
     private const string CHANGE_REPORT_STATUS_ROUTE = "city/{cityName}/problem/{id}";
     private const string GET_REPORTED_PROBLEM_ROUTE = "city/{cityName}/problem/{id}";
     private const string GET_CITY_REPORTS = "city/{cityName}";
+    private const string DELETE_REPORTED_PROBLEM_ROUTE = "city/{cityName}/problem/{id}";
     private const string AUTHORIZATION_HEADER = "Authorization";
     private const string BEARER_PARAMETER = "Bearer ";
     private const string EMPTY_STRING = "";
