@@ -13,6 +13,7 @@ public static class JwtUtils
         var claims = new[]
         {
             new Claim(ClaimTypes.NameIdentifier, user.RowKey),
+            new Claim(ClaimTypes.Role, user.Type!),
         };
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration.GetValue<string>(JWT_KEY)!));
