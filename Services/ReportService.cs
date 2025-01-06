@@ -25,6 +25,10 @@ public class ReportService
     {
         var updatedReport = new Domain.models.Report(reportToUpdate);
         updatedReport.Status = changeReportStatusRequest.NewStatus.ToString();
+        if ((!updatedReport.IsRedeemed) && (changeReportStatusRequest.NewStatus == Domain.models.ProblemStatus.Fixing))
+        {
+            updatedReport.IsRedeemed = true;
+        }
         await _reportsTable.ExecuteAsync(TableOperation.Replace(updatedReport));
         return updatedReport;
     }

@@ -49,8 +49,22 @@ public class UserService
         return true;
     }
 
+    public async Task<Domain.models.User?> AwardPointsToUserAsync(string email)
+    {
+        var userToUpdate = await GetUserByEmailAsync(email);
+        if (userToUpdate == null)
+        {
+            return null;
+        }
+        var updatedUser = new Domain.models.User(userToUpdate);
+        updatedUser.PointsNumber += REWARDED_POINTS;
+        await _usersTable.ExecuteAsync(TableOperation.Replace(updatedUser));
+        return updatedUser;
+    }
+
     private readonly CloudTable _usersTable;
     private const string TABLE_NAME = "Users";
     private const string AZURE_STORAGE = "AzureStorage";
     private const string ROW_KEY = "RowKey";
+    private const int REWARDED_POINTS = 10;
 }

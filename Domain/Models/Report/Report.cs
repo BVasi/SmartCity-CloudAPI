@@ -14,6 +14,7 @@ public class Report : TableEntity
         Status = reportToCopy.Status;
         Problem = reportToCopy.Problem;
         ReportDate = reportToCopy.ReportDate;
+        IsRedeemed = reportToCopy.IsRedeemed;
 
         PartitionKey = reportToCopy.PartitionKey;
         RowKey = reportToCopy.RowKey;
@@ -29,6 +30,7 @@ public class Report : TableEntity
         ReportDate = DateTime.Now;
         Status = ProblemStatus.New.ToString();
         Street = address.Street.ToString();
+        IsRedeemed = false;
 
         PartitionKey = address.City.ToString();
         RowKey = $"{ReporterEmail}_{ReportDate:yyyyMMddTHHmmss}";
@@ -39,5 +41,6 @@ public class Report : TableEntity
     public string? Street { get; set; }
     public string? Status { get; set; }
     public string? Problem { get; set; }
+    public bool IsRedeemed { get; set; }
     public DateTime ReportDate { get; set; }
 }

@@ -1,3 +1,4 @@
+using System.Drawing;
 using Microsoft.WindowsAzure.Storage.Table;
 
 namespace Domain.models;
@@ -5,6 +6,21 @@ namespace Domain.models;
 public class User : TableEntity //to do: add token/s to DB
 {
     public User() {}
+
+    public User(User userToCopy)
+    {
+        FirstName = userToCopy.FirstName;
+        LastName = userToCopy.LastName;
+        PhoneNumber = userToCopy.PhoneNumber;
+        PasswordHash = userToCopy.PasswordHash;
+        PointsNumber = userToCopy.PointsNumber;
+        Type = userToCopy.Type;
+
+        PartitionKey = userToCopy.PartitionKey;
+        RowKey = userToCopy.RowKey;
+        Timestamp = userToCopy.Timestamp;
+        ETag = userToCopy.ETag;
+    }
 
     public User(string firstName, string lastName, string email,
         string phoneNumber, string passwordHash, CityName residenceCity)

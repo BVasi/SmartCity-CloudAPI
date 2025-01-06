@@ -8,7 +8,7 @@ namespace API.Controllers;
 
 [Route(BASE_ROUTE)]
 [ApiController]
-public class ReportsController : ControllerBase //to do: add HttpPut method
+public class ReportsController : ControllerBase
 {
     public ReportsController(ReportService reportService, UserService userService, IConfiguration configuration)
     {
@@ -40,10 +40,11 @@ public class ReportsController : ControllerBase //to do: add HttpPut method
     }
 
     [HttpPost(REPORT_PROBLEM_ROUTE)]
-    public async Task<IActionResult> ReportProblem(CreateReportRequest request) //to do: add edge case for admin
+    public async Task<IActionResult> ReportProblem(CreateReportRequest request)
     {
         var jwtToken = Request.Headers[AUTHORIZATION_HEADER].ToString()?.Replace(BEARER_PARAMETER, EMPTY_STRING);
-        if (JwtUtils.GetUserEmailFromToken(jwtToken!, _configuration) != request.ReporterEmail)
+        var userEmail = JwtUtils.GetUserEmailFromToken(jwtToken!, _configuration);
+        if ((userEmail != request.ReporterEmail) && (!await _userService.IsUserAdminByEmailAsync(userEmail!)))
         {
             return Unauthorized();
         }
@@ -81,6 +82,13 @@ public class ReportsController : ControllerBase //to do: add HttpPut method
         if ((updatedReport == null) || (updatedReport.Status == reportToUpdate.Status))
         {
             return Conflict();
+        }
+        if (updatedReport.IsRedeemed && (!reportToUpdate.IsRedeemed))
+        {
+            if (await _userService.AwardPointsToUserAsync(updatedReport.ReporterEmail!) == null)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
         }
 
         return Ok(new GetReportResponse(updatedReport));
