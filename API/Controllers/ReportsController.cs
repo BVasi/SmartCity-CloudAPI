@@ -44,6 +44,10 @@ public class ReportsController : ControllerBase
     {
         var jwtToken = Request.Headers[AUTHORIZATION_HEADER].ToString()?.Replace(BEARER_PARAMETER, EMPTY_STRING);
         var userEmail = JwtUtils.GetUserEmailFromToken(jwtToken!, _configuration);
+        if (userEmail == null)
+        {
+            return Unauthorized();
+        }
         if ((userEmail != request.ReporterEmail) && (!await _userService.IsUserAdminByEmailAsync(userEmail!)))
         {
             return Unauthorized();
