@@ -3,7 +3,7 @@ namespace DTO.models;
 
 public class UserLogInResponse
 {
-    public UserLogInResponse(User user, string token)
+    public UserLogInResponse(User user)
     {
         FirstName = user.FirstName;
         LastName = user.LastName;
@@ -11,7 +11,7 @@ public class UserLogInResponse
         PhoneNumber = user.PhoneNumber;
         PointsNumber = user.PointsNumber;
         ResidenceCity = Enum.Parse<CityName>(user.PartitionKey);
-        Token = token;
+        Token = user.Token;
     }
 
     public string? FirstName { get; set; }

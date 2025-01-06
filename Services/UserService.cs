@@ -62,6 +62,15 @@ public class UserService
         return updatedUser;
     }
 
+    public async Task<Domain.models.User> UpdateUserTokenAsync(Domain.models.User userToUpdate,
+        string token)
+    {
+        var updatedUser = new Domain.models.User(userToUpdate);
+        updatedUser.Token = token;
+        await _usersTable.ExecuteAsync(TableOperation.Replace(updatedUser));
+        return updatedUser;
+    }
+
     private readonly CloudTable _usersTable;
     private const string TABLE_NAME = "Users";
     private const string AZURE_STORAGE = "AzureStorage";

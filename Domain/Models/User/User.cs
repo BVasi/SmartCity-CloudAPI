@@ -1,9 +1,8 @@
-using System.Drawing;
 using Microsoft.WindowsAzure.Storage.Table;
 
 namespace Domain.models;
 
-public class User : TableEntity //to do: add token/s to DB
+public class User : TableEntity
 {
     public User() {}
 
@@ -15,6 +14,7 @@ public class User : TableEntity //to do: add token/s to DB
         PasswordHash = userToCopy.PasswordHash;
         PointsNumber = userToCopy.PointsNumber;
         Type = userToCopy.Type;
+        Token = userToCopy.Token;
 
         PartitionKey = userToCopy.PartitionKey;
         RowKey = userToCopy.RowKey;
@@ -42,6 +42,7 @@ public class User : TableEntity //to do: add token/s to DB
     public string? PasswordHash { get; set; }
     public int PointsNumber { get; set; }
     public string? Type { get; set; }
+    public string? Token { get; set; }
 
     private const int STARTING_POINTS_NUMBER = 0;
 }

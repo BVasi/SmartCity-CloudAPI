@@ -50,6 +50,29 @@ public static class JwtUtils
         }
     }
 
+    public static bool IsTokenExpired(string token, IConfiguration configuration)
+    {
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration.GetValue<string>(JWT_KEY)!));
+        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+        try
+        {
+            var validationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = false,
+                ValidateAudience = false,
+                ValidateLifetime = true,
+                ClockSkew = TimeSpan.Zero,
+                IssuerSigningKey = creds.Key
+            };
+            new JwtSecurityTokenHandler().ValidateToken(token, validationParameters, out var validatedToken);
+            return false;
+        }
+        catch (Exception)
+        {
+            return true;
+        }
+    }
+
     private const string JWT_KEY = "Jwt:Key";
     private const int VALABILITY_TIME = 1;
 }

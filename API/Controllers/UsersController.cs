@@ -1,4 +1,3 @@
-using Domain.models;
 using DTO.models;
 using Microsoft.AspNetCore.Mvc;
 using services;
@@ -28,8 +27,9 @@ public class UsersController : ControllerBase
         {
            return StatusCode(StatusCodes.Status500InternalServerError);
         }
-        return CreatedAtAction(nameof(LogIn), new UserLogInResponse(createdUser,
-            JwtUtils.GenerateTokenForUser(createdUser, _configuration)));
+        createdUser = await _userService.UpdateUserTokenAsync(createdUser,
+            JwtUtils.GenerateTokenForUser(createdUser, _configuration));
+        return CreatedAtAction(nameof(LogIn), new UserLogInResponse(createdUser));
     }
 
     [HttpPost(LOG_IN_ROUTE)]
@@ -44,8 +44,12 @@ public class UsersController : ControllerBase
         {
             return Unauthorized();
         }
-        return Ok(new UserLogInResponse(possibleLoggedInUser,
-            JwtUtils.GenerateTokenForUser(possibleLoggedInUser, _configuration)));
+        if (JwtUtils.IsTokenExpired(possibleLoggedInUser.Token!, _configuration))
+        {
+            possibleLoggedInUser = await _userService.UpdateUserTokenAsync(possibleLoggedInUser,
+                JwtUtils.GenerateTokenForUser(possibleLoggedInUser, _configuration));
+        }
+        return Ok(new UserLogInResponse(possibleLoggedInUser));
     }
 
     private readonly UserService _userService;
